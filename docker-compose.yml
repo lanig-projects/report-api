@@ -4,8 +4,3 @@ services:
     container_name: tickets_api_service
     ports:
       - "4321:4321"
-    volumes:
-      - .:/usr/src/app
-    environment:
-      - NODE_ENV=production
-    restart: always

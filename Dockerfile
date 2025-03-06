@@ -1,15 +1,16 @@
+# Usar una imagen oficial de Node.js
 FROM node:18
 
-# Establecer el directorio de trabajo
+# Establecer el directorio de trabajo en el contenedor
 WORKDIR /usr/src/app
 
-# Copiar package.json y package-lock.json
+# Copiar solo los archivos de dependencias primero
 COPY package*.json ./
 
-# Instalar dependencias
+# Instalar las dependencias antes de copiar el código
 RUN npm install
 
-# Copiar el resto del código de la aplicación
+# Luego copiar el resto del código
 COPY . .
 
 # Exponer el puerto en el que corre la aplicación
