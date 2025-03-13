@@ -86,6 +86,46 @@ app.post("/api/create-report", upload.single("file"), async (req, res) => {
     }
 });
 
+app.get("/api/userstories", async (req, res) => {
+    try {
+        const { projectId, status } = req.query;
+
+        if (!projectId || !status) {
+            return res.status(400).json({ error: "Los parámetros projectId y status son requeridos." });
+        }
+
+        // Autenticación
+        const authResponse = await axios.post(
+            "https://kanban.lanig.com.mx/api/v1/auth",
+            {
+                username: "mtz0mau2002@gmail.com",
+                password: "12345678",
+                type: "normal",
+            }
+        );
+        const authToken = authResponse.data.auth_token;
+
+        // Obtener historias de usuario
+        const response = await axios.get(
+            `https://kanban.lanig.com.mx/api/v1/userstories?project=${projectId}&status=${status}`,
+            {
+                headers: { Authorization: `Bearer ${authToken}` },
+            }
+        );
+
+        const formattedStories = response.data?.map(story => {
+            const tags = story.tags?.map(tag => tag[0]).join(" - ");
+            const epics = story.epics?.map(epic => epic.subject).join(" - ");
+            return `${story.subject} - ${tags} - ${epics}`;
+        });
+
+        res.json(formattedStories);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al obtener las historias de usuario." });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
